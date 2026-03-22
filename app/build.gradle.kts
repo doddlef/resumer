@@ -56,11 +56,13 @@ dependencies {
 	// Main
 	implementation(libs.flyway.database.postgresql)
 	implementation(libs.jackson.module.kotlin)
+	implementation(libs.jjwt.api)
 	implementation(libs.jooq.postgres.extension)
 	implementation(libs.kotlin.reflect)
 	implementation(libs.lettuce.core)
+	implementation(libs.tika.core)
+	implementation(libs.tika.parsers)
 	implementation(libs.uuid.creator)
-	implementation(libs.jjwt.api)
 
 	// Development
 	developmentOnly(libs.spring.boot.devtools)

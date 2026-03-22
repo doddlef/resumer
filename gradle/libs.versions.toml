@@ -11,13 +11,14 @@ flyway = "11.15.0"
 jooq = "3.20.10"
 
 # Libraries
+jjwt = "0.13.0"
 lettuce = "7.4.0.BETA1" # Lettuce version
 postgresql = "42.7.10"
+tika = "3.2.3"
 testcontainers = "2.0.1"
 testcontainersRedis = "2.2.2"
 mockitoKotlin = "5.4.0"
 uuid = "5.2.0" # UUID Creator version
-jjwt = "0.13.0"
 
 [plugins]
 # Kotlin
@@ -57,11 +58,13 @@ jooq-postgres-extension = { module = "org.jooq:jooq-postgres-extensions", versio
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 
 # Libraries
-lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
-uuid-creator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "uuid" }
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
+tika-parsers = { module = "org.apache.tika:tika-parsers-standard-package", version.ref = "tika" }
+uuid-creator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "uuid" }
 
 # Test (Spring Boot)
 spring-boot-restdocs = { module = "org.springframework.boot:spring-boot-restdocs" }
