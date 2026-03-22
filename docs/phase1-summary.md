@@ -2,77 +2,166 @@
 
 Updated: March 22, 2026
 
-## Scope Completed
-- Authentication domain and persistence foundation.
-- Registration workflow with email-code verification state in Redis.
-- Token issuance architecture with clear service boundaries.
-- API endpoints for auth and registration.
-- Integration/unit test coverage and API docs generation.
-- CI workflow for migration + jOOQ codegen + tests.
+This document is the handoff/onboarding guide for current Phase 1 state.  
+If you are new to the project, start from `Getting Started`, then read `How It Works` and `Where to Change`.
 
-## Implemented Features
+## What Is Done in This Phase
+- Auth schema and migrations are implemented.
+- Auth/register backend flows are implemented end-to-end.
+- Token architecture is in place (`TokenService` entry + delegated services).
+- Auth/register API endpoints are implemented.
+- Unit + integration tests are in place.
+- REST Docs snippets are generated from MockMvc integration tests.
+- CI runs migration + jOOQ codegen + tests.
 
-## 1) Database and Migrations
-- Flyway migrations:
-  - `V1__init.sql` (extensions and shared trigger function)
-  - `V2__auth.sql` (auth enums/tables/indexes/triggers)
-- Core auth tables:
+## Architecture Snapshot
+
+## Service Layer
+- `AuthService`: email/password authentication via Spring Security `AuthenticationManager`.
+- `AccessService`: JWT access token issue and parse.
+- `RefreshService`: refresh session create/rotate/revoke with replay detection.
+- `TokenService`: single entry point for login/refresh/access/logout.
+- `RegisterService`: registration flow (`start -> verify -> confirm -> resend`), backed by Redis.
+
+## Controller Layer
+- `POST /api/auth` login.
+- `POST /api/auth/refresh` refresh with cookie token.
+- `POST /api/auth/logout` revoke + clear cookie.
+- `POST /api/register/start`
+- `POST /api/register/verify`
+- `POST /api/register` (confirmation endpoint)
+- `POST /api/register/resend`
+
+`/api/register` confirmation returns:
+- `token_pair` in payload (access + refresh)
+- refresh cookie via `Set-Cookie`
+
+## Persistence and State
+- PostgreSQL stores durable auth data (`accounts`, `refresh_sessions`).
+- Redis stores temporary registration attempts and cooldown state.
+
+## Database and Migrations
+- `V1__init.sql`: extensions + common trigger function.
+- `V2__auth.sql`: auth enums, tables, indexes, update triggers.
+- Core tables:
   - `accounts`
   - `refresh_sessions`
 
-## 2) Auth Services
-- `AccessService`: issue and parse access JWT tokens.
-- `RefreshService`: create/rotate/revoke refresh sessions with replay detection.
-- `TokenService`: single entrypoint facade for login/refresh/access/logout.
-- `RegisterService`: start/verify/confirm/resend flow backed by Redis attempts.
+## Security Behavior
+- Passwords hashed with BCrypt.
+- Refresh secret is hashed before persistence.
+- Refresh rotation supports brief grace for previous token.
+- Reuse detection revokes session (`refresh_token_reuse_detected`).
+- Refresh cookie construction is centralized in `RefreshCookieManager`.
 
-## 3) Controllers
-- Auth APIs:
-  - `POST /api/auth`
-  - `POST /api/auth/refresh`
-  - `POST /api/auth/logout`
-- Register APIs:
-  - `POST /api/register/start`
-  - `POST /api/register/verify`
-  - `POST /api/register`
-  - `POST /api/register/resend`
+## Getting Started (Local)
 
-Registration confirmation (`POST /api/register`) returns:
-- token pair (access + refresh in response payload)
-- refresh cookie (`Set-Cookie` header)
+## 1) Prerequisites
+- JDK 21
+- Docker (for local Postgres/Redis via your setup) or manually running Postgres/Redis
+- Gradle wrapper (`./gradlew`)
 
-## 4) Security and Session Behavior
-- Password hashing via BCrypt.
-- Refresh secret hashing and constant-time comparison.
-- Refresh rotation with:
-  - previous secret grace window handling
-  - reuse detection and automatic session revocation
-- Cookie generation centralized in `RefreshCookieManager`.
+## 2) Prepare `.env`
+Copy `.env.example` and fill values:
+- DB:
+  - `POSTGRES_URL`
+  - `POSTGRES_DB`
+  - `POSTGRES_USER`
+  - `POSTGRES_PASSWORD`
+- Auth:
+  - `AUTH_ACCESS_SECRET`
+  - `AUTH_REFRESH_SECRET`
+  - `REGISTER_CODE_HASH_SECRET`
 
-## 5) Testing and Documentation
-- Unit tests:
-  - `AccessServiceImplTest`
-  - `RefreshServiceImplTest`
-  - `TokenServiceImplTest`
-  - `RegisterServiceImplTest`
-- Integration tests:
-  - `RedisClientIntegrationTest` (Testcontainers Redis)
-  - `RegisterControllerDocumentationTest` (MockMvc + REST Docs)
-  - `AuthControllerDocumentationTest` (MockMvc + REST Docs)
-- REST Docs snippets generated for:
-  - register start/verify/confirm/resend
-  - auth login/refresh/logout
+## 3) Build DB Schema + jOOQ
+Run in project root:
 
-## 6) CI Automation
-- GitHub Actions workflow runs on push/PR.
-- Pipeline sequence:
-  1. export env from `.env`
-  2. run `app:flywayMigrate`
-  3. run `app:jooqCodegen`
-  4. run `app:test`
-- PostgreSQL service is provisioned in CI for migration/codegen.
+```bash
+set -a
+source .env
+set +a
 
-## Remaining to Complete Full Phase 1
+./gradlew app:flywayMigrate
+./gradlew app:jooqCodegen
+```
+
+## 4) Run Tests
+```bash
+./gradlew app:test
+```
+
+## 5) Run Application
+```bash
+set -a
+source .env
+set +a
+./gradlew app:bootRun
+```
+
+## How to Use Current APIs
+
+## Register flow
+1. `POST /api/register/start`
+2. `POST /api/register/verify`
+3. `POST /api/register` (confirm account and receive token pair + cookie)
+4. `POST /api/register/resend` (if needed before verify)
+
+## Auth flow
+1. `POST /api/auth` (email/password login)
+2. `POST /api/auth/refresh` (requires refresh cookie)
+3. `POST /api/auth/logout` (revoke + clear refresh cookie)
+
+## Testing and API Docs
+
+## Unit tests
+- `AccessServiceImplTest`
+- `RefreshServiceImplTest`
+- `TokenServiceImplTest`
+- `RegisterServiceImplTest`
+
+## Integration tests
+- `RedisClientIntegrationTest`
+- `RegisterControllerDocumentationTest`
+- `AuthControllerDocumentationTest`
+
+## REST Docs snippets
+Generated under `app/build/generated-snippets` for:
+- `register-start`
+- `register-verify`
+- `register-confirm`
+- `register-resend`
+- `auth-login`
+- `auth-refresh`
+- `auth-logout`
+
+## Generate docs artifact
+```bash
+./gradlew app:asciidoctor
+```
+
+## CI Behavior
+GitHub Actions (`.github/workflows/ci.yml`) does:
+1. start PostgreSQL service
+2. export env
+3. `app:flywayMigrate`
+4. `app:jooqCodegen`
+5. `app:test`
+
+CI requires repository configuration:
+- `secrets.POSTGRES_PASSWORD`
+- `secrets.AUTH_ACCESS_SECRET` (or fallback used in workflow)
+- `secrets.AUTH_REFRESH_SECRET` (or fallback used in workflow)
+- `secrets.REGISTER_CODE_HASH_SECRET` (or fallback used in workflow)
+- optional `vars.POSTGRES_DB`, `vars.POSTGRES_USER`
+
+## Where to Change Next
+- Auth API request/response shape: `auth/api` and `auth/api/dto`.
+- Token/session logic: `auth/service` + `auth/service/impl`.
+- DB schema changes: `app/src/main/resources/db/migration`.
+- Repository query style: `auth/repo` + `auth/repo/query`.
+- Test/docs for new endpoints: `auth/api/*DocumentationTest.kt`.
+
+## Remaining for Full Phase 1 Completion
 - Resume upload and object storage integration.
 - Resume analysis/scoring pipeline.
 - Resume base/history APIs and tests.
