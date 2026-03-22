@@ -48,7 +48,7 @@ class SecurityConfiguration(
     @Order(1)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
-            .securityMatcher("/api/auth/**")
+            .securityMatcher("/api/auth/**", "/api/register/**")
             .authorizeHttpRequests { it
                 .anyRequest().permitAll()
             }
