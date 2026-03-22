@@ -1,0 +1,21 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+
+spring:
+  application:
+    name: app
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_URL}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+resumer:
+  auth:
+    access:
+      secret: ${AUTH_ACCESS_SECRET:local_dev_access_secret_change_me_1234567890}
+    refresh:
+      secret: ${AUTH_REFRESH_SECRET:local_dev_refresh_secret_change_me_1234567890}
+    register:
+      code-hash-secret: ${REGISTER_CODE_HASH_SECRET:local_dev_register_secret_change_me_1234567890}

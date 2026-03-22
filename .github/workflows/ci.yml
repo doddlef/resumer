@@ -13,21 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     env:
       POSTGRES_URL: jdbc:postgresql://localhost:5432
-      POSTGRES_DB: ${{ vars.POSTGRES_DB || 'database' }}
-      POSTGRES_USER: ${{ vars.POSTGRES_USER || 'root' }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      AUTH_ACCESS_SECRET: ${{ secrets.AUTH_ACCESS_SECRET || 'ci_access_secret_change_me_1234567890' }}
+      AUTH_REFRESH_SECRET: ${{ secrets.AUTH_REFRESH_SECRET || 'ci_refresh_secret_change_me_1234567890' }}
+      REGISTER_CODE_HASH_SECRET: ${{ secrets.REGISTER_CODE_HASH_SECRET || 'ci_register_secret_change_me_1234567890' }}
 
     services:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'database' }}
-          POSTGRES_USER: ${{ vars.POSTGRES_USER || 'root' }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U ${{ vars.POSTGRES_USER || 'root' }} -d ${{ vars.POSTGRES_DB || 'database' }}"
+          --health-cmd="pg_isready -U ${{ vars.POSTGRES_USER || 're_root' }} -d ${{ vars.POSTGRES_DB || 'resumer_db' }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -50,6 +53,9 @@ jobs:
           POSTGRES_DB=${POSTGRES_DB}
           POSTGRES_USER=${POSTGRES_USER}
           POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          AUTH_ACCESS_SECRET=${AUTH_ACCESS_SECRET}
+          AUTH_REFRESH_SECRET=${AUTH_REFRESH_SECRET}
+          REGISTER_CODE_HASH_SECRET=${REGISTER_CODE_HASH_SECRET}
           EOF
 
       - name: Make Gradle wrapper executable

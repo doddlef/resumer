@@ -3,6 +3,32 @@
 ## Vision
 Build a full-stack interview guidance platform for students using Spring Boot + React. The system helps users upload resumes, receive structured analysis and targeted advice, prepare application materials, and practice interviews with progressive intelligence.
 
+## Progress Snapshot (Updated: March 22, 2026)
+### Completed in Current Phase Slice
+- Authentication foundation (Spring Security + JWT + refresh session rotation/revocation).
+- Registration flow (`start -> verify -> confirm -> resend`) with Redis-backed attempts.
+- Token facade architecture (`TokenService` as entry, delegating to `AccessService` and `RefreshService`).
+- API controllers:
+  - `/api/auth` (login)
+  - `/api/auth/refresh`
+  - `/api/auth/logout`
+  - `/api/register`
+  - `/api/register/start|verify|resend`
+- Flyway migrations for auth schema (`accounts`, `refresh_sessions`).
+- jOOQ repository layer with extracted query DTOs (`auth/repo/query/*`).
+- Integration/unit test coverage for auth/register/token/redis flows.
+- Spring REST Docs snippets generation through MockMvc tests.
+- GitHub Actions CI:
+  - export env
+  - `app:flywayMigrate`
+  - `app:jooqCodegen`
+  - `app:test`
+
+### Remaining for Full Phase 1 Completion
+- Resume upload/storage module.
+- Resume analysis/scoring pipeline and result persistence.
+- Resume base listing/detail APIs and UI integration.
+
 ## Product Principles
 - Start with production-grade foundations (auth, modular backend, persistent data model).
 - Prioritize maintainability and extensibility over fast but brittle shortcuts.
@@ -106,6 +132,18 @@ Note: all domain tables should include `user_id` from the beginning.
 - Resume file is uploaded and retrievable via stored key.
 - Analysis result is persisted with score + explanation fields.
 - User can view historical resume uploads and analyses.
+
+### Implementation Status (March 22, 2026)
+- Done:
+  - Register/login/refresh/logout backend flows.
+  - JWT access token issue/parse and refresh session rotation/reuse handling.
+  - DB migrations + jOOQ codegen integration.
+  - Auth/register controllers and cookie handling.
+  - MockMvc integration tests and REST Docs for auth/register endpoints.
+- In progress / pending:
+  - Resume upload/storage
+  - Resume analysis and scoring
+  - Resume base query/view endpoints
 
 ## Phase 2: Job Targeting + Cover Letter
 ### Goals

@@ -40,3 +40,24 @@ Table representing an authentication session. Each session should represent one 
 - `revoke_reason`: text, optional, revoke reason; must be non-null when `revoked_at` is non-null
 - `created_at`: timestamptz, not null
 - `updated_at`: timestamptz, not null
+
+### Registration Attempt Cache (Redis)
+Registration verification state is stored in Redis (ephemeral, TTL-based), not PostgreSQL.
+
+#### Key Patterns
+- `register:attempt:{attemptId}`
+- `register:email:{emailHash}`
+- `register:cooldown:{attemptId}`
+
+#### Cached Model (`RegisterAttempt`)
+- `attemptId`
+- `email` (normalized lowercase)
+- `codeHash` (hashed verification code; raw code is never persisted)
+- `verifiedAt` (null until verification succeeds)
+- `tryCount`
+- `createdAt`
+
+#### Notes
+- `attempt` and `email` keys use the same TTL (`attemptLifetime`).
+- `resend` uses cooldown key with `resendCooldown` TTL.
+- On successful registration confirmation, attempt/email/cooldown keys are deleted.

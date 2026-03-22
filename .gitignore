@@ -18,6 +18,3 @@ Resumer.iml
 
 # Ignore agent directory
 /agent/
-
-# Ignore application configuration file
-/app/src/main/resources/application.yaml

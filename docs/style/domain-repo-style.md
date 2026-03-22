@@ -38,8 +38,8 @@ data class Account(
 
 - Repository interface belongs to domain boundary.
 - Use explicit `selectBy...` methods for reads.
-- Use nested query command classes for write inputs (`InsertQuery`, `UpdateQuery`).
-- `UpdateQuery` fields are nullable for partial updates.
+- Keep write query command classes as top-level files under `repo/query` (for example, `AccountInsertQuery`, `RefreshSessionUpdateQuery`).
+- `Update` command fields are nullable for partial updates.
 
 Short example:
 
@@ -48,21 +48,8 @@ interface AccountRepo {
     fun selectById(id: UUID): Account?
     fun selectByEmail(email: String): Account?
 
-    data class InsertQuery(
-        val id: UUID,
-        val email: String,
-        val password: String,
-        val name: String,
-    )
-
-    fun insert(query: InsertQuery): Int
-
-    data class UpdateQuery(
-        val name: String? = null,
-        val status: AccountStatus? = null,
-    )
-    
-    fun updateById(id: UUID, query: UpdateQuery): Int
+    fun insert(query: AccountInsertQuery): Int
+    fun updateById(id: UUID, query: AccountUpdateQuery): Int
 }
 ```
 
