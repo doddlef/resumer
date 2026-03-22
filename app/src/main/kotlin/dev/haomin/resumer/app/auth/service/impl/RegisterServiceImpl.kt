@@ -244,6 +244,8 @@ class RegisterServiceImpl(
             throw InvalidParamException("verification code generation failed")
         }
         // TODO: integrate email provider.
+        // FIXME: DEBUG only
+        log.info("code={}", code)
     }
 
     private fun attemptKey(attemptId: String): String = "register:attempt:$attemptId"

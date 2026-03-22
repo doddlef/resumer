@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_URL: jdbc:postgresql://localhost:5432
+      POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ${{ vars.POSTGRES_USER || 're_root' }} -d ${{ vars.POSTGRES_DB || 'resumer_db' }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Prepare CI .env
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_URL=${POSTGRES_URL}
+          POSTGRES_DB=${POSTGRES_DB}
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          EOF
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Run Flyway, jOOQ codegen, and tests
+        run: |
+          # 1) Export env
+          set -a
+          source .env
+          set +a
+
+          # 2) Apply migrations
+          ./gradlew app:flywayMigrate
+
+          # 3) Generate jOOQ sources
+          ./gradlew app:jooqCodegen
+
+          # 4) Run all tests
+          ./gradlew app:test

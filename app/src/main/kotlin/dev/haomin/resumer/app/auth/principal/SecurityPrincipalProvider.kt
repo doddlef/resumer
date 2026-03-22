@@ -23,6 +23,6 @@ class SecurityPrincipalProvider: PrincipalProvider {
     override fun current(): AuthPrincipal? =
         SecurityContextHolder.getContext()
             .authentication
-            ?.principal
-            ?.let { it as AuthPrincipal }
+            ?.takeIf { it.isAuthenticated }
+            ?.principal as? AuthPrincipal
 }
