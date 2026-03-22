@@ -52,7 +52,7 @@ class RegisterController(
         return ResponseEntity.ok(body)
     }
 
-    @PostMapping("/")
+    @PostMapping
     fun confirm(@RequestBody request: RegisterConfirmRequest): ResponseEntity<ApiResponse> {
         val result = registerService.completeRegistration(
             CompleteRegistrationCmd(
