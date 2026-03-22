@@ -1,5 +1,6 @@
 package dev.haomin.resumer.app.infra.file
 
+import dev.haomin.resumer.app.infra.file.model.FileSource
 import io.jsonwebtoken.io.IOException
 import org.apache.tika.Tika
 import org.slf4j.Logger

@@ -1,0 +1,9 @@
+John Doe
+image12.png
+https://cdn.example.com/avatar.jpeg?x=1
+---
+Experience: Built backend APIs.
+
+
+
+Skills: Kotlin, Spring Boot

@@ -1,4 +1,4 @@
-package dev.haomin.resumer.app.infra.file
+package dev.haomin.resumer.app.infra.file.model
 
 import java.io.InputStream
 
@@ -7,7 +7,6 @@ import java.io.InputStream
  * Typically used for handling files independent of their physical or logical storage location.
  */
 interface FileSource {
-
     val fileName: String?
     val contentType: String?
     val size: Long

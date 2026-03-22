@@ -1,4 +1,4 @@
-package dev.haomin.resumer.app.infra.file
+package dev.haomin.resumer.app.infra.file.model
 
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
