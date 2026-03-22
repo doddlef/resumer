@@ -17,6 +17,7 @@ testcontainers = "2.0.1"
 testcontainersRedis = "2.2.2"
 mockitoKotlin = "5.4.0"
 uuid = "5.2.0" # UUID Creator version
+jjwt = "0.13.0"
 
 [plugins]
 # Kotlin
@@ -58,6 +59,9 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 # Libraries
 lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
 uuid-creator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "uuid" }
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
 # Test (Spring Boot)
 spring-boot-restdocs = { module = "org.springframework.boot:spring-boot-restdocs" }

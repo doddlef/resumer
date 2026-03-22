@@ -60,12 +60,15 @@ dependencies {
 	implementation(libs.kotlin.reflect)
 	implementation(libs.lettuce.core)
 	implementation(libs.uuid.creator)
+	implementation(libs.jjwt.api)
 
 	// Development
 	developmentOnly(libs.spring.boot.devtools)
 	developmentOnly(libs.spring.boot.docker.compose)
 
 	// Runtime
+	runtimeOnly(libs.jjwt.impl)
+	runtimeOnly(libs.jjwt.jackson)
 	runtimeOnly(libs.postgresql)
 
 	// Annotation processing

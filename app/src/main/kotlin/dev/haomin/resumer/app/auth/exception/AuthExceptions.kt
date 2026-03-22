@@ -24,7 +24,7 @@ open class AuthExceptions(
     cause: Throwable? = null,
 ): AppException(
     code = ApiCode.AUTH_FAILED,
-    message = ApiCode.AUTH_FAILED.description,
+    message = message,
     payload = payload,
     cause = cause
 )
