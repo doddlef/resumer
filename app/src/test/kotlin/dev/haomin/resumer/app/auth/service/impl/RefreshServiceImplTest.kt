@@ -166,6 +166,34 @@ class RefreshServiceImplTest {
     }
 
     @Test
+    fun `rotateSession should revoke and reject reused previous token outside grace window`() {
+        val sessionId = UUID.randomUUID()
+        val now = OffsetDateTime.now()
+        val reusedSecret = "reused-secret"
+        val session = RefreshSession(
+            id = sessionId,
+            accountId = UUID.randomUUID(),
+            secret = hash("current-secret"),
+            prevSecret = hash(reusedSecret),
+            lastUsedAt = now.minusMinutes(1),
+            revokedAt = null,
+            revokeReason = null,
+            createdAt = now.minusDays(1),
+            updatedAt = now.minusMinutes(1),
+        )
+        whenever(refreshSessionRepo.selectByIdForUpdate(eq(sessionId))).thenReturn(session)
+        whenever(refreshSessionRepo.updateById(eq(sessionId), any())).thenReturn(1)
+
+        assertThrows(InvalidAuthenticationException::class.java) {
+            refreshService.rotateSession("$sessionId.$reusedSecret")
+        }
+        val updateCaptor = argumentCaptor<RefreshSessionUpdateQuery>()
+        verify(refreshSessionRepo, times(1)).updateById(eq(sessionId), updateCaptor.capture())
+        assertEquals("refresh_token_reuse_detected", updateCaptor.firstValue.revokeReason)
+        assertNotNull(updateCaptor.firstValue.revokedAt)
+    }
+
+    @Test
     fun `revokeSession returns false and does not update when token secret mismatches`() {
         val sessionId = UUID.randomUUID()
         val session = RefreshSession(
