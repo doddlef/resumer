@@ -50,6 +50,7 @@ dependencies {
 	implementation(libs.spring.boot.starter.flyway)
 	implementation(libs.spring.boot.starter.jooq)
 	implementation(libs.spring.boot.starter.mail)
+	implementation(libs.spring.boot.starter.security)
 	implementation(libs.spring.boot.starter.webmvc)
 
 	// Main
@@ -76,6 +77,7 @@ dependencies {
 	testImplementation(libs.spring.boot.starter.jooq.test)
 	testImplementation(libs.spring.boot.starter.mail.test)
 	testImplementation(libs.spring.boot.restdocs)
+	testImplementation(libs.spring.boot.starter.security.test)
 	testImplementation(libs.spring.boot.starter.webmvc.test)
 	testImplementation(libs.spring.boot.testcontainers)
 	testImplementation(libs.kotlin.test.junit5)
