@@ -1,0 +1,23 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+/.idea
+/app/bin
+
+# IDEA code analysis
+qodana.yaml
+Resumer.iml
+
+# Ignore environment variable files
+.env
+
+# Ignore system-specific files
+.DS_Store
+
+# Ignore agent directory
+/agent/
+
+# Ignore application configuration file
+/app/src/main/resources/application.yaml
