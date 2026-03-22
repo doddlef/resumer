@@ -13,21 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     env:
       POSTGRES_URL: jdbc:postgresql://localhost:5432
-      POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
-      POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB || 'database' }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER || 'root' }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
     services:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'resumer_db' }}
-          POSTGRES_USER: ${{ vars.POSTGRES_USER || 're_root' }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB || 'database' }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER || 'root' }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U ${{ vars.POSTGRES_USER || 're_root' }} -d ${{ vars.POSTGRES_DB || 'resumer_db' }}"
+          --health-cmd="pg_isready -U ${{ vars.POSTGRES_USER || 'root' }} -d ${{ vars.POSTGRES_DB || 'database' }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
