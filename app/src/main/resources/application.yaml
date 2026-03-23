@@ -19,3 +19,10 @@ resumer:
       secret: ${AUTH_REFRESH_SECRET:local_dev_refresh_secret_change_me_1234567890}
     register:
       code-hash-secret: ${REGISTER_CODE_HASH_SECRET:local_dev_register_secret_change_me_1234567890}
+  storage:
+    engine: ${STORAGE_ENGINE:local}
+    local:
+      base-dir: ${STORAGE_LOCAL_BASE_DIR:./.local-storage}
+      public-base-url: ${STORAGE_LOCAL_PUBLIC_BASE_URL:}
+      temp-url-secret: ${STORAGE_LOCAL_TEMP_URL_SECRET:local_temp_url_secret_change_me_12345678901234567890}
+      default-ttl: ${STORAGE_LOCAL_DEFAULT_TTL:5m}
