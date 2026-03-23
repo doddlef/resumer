@@ -70,6 +70,7 @@ class SecurityConfiguration(
         http
             .securityMatcher("/**")
             .authorizeHttpRequests { it
+                .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .anyRequest().authenticated()
             }
