@@ -1,16 +1,22 @@
 package dev.haomin.resumer.app.framework.redis
 
 import java.util.concurrent.TimeUnit
+import org.springframework.data.redis.connection.stream.Consumer
+import org.springframework.data.redis.connection.stream.MapRecord
+import org.springframework.data.redis.connection.stream.ReadOffset
+import org.springframework.data.redis.connection.stream.RecordId
+import org.springframework.data.redis.connection.stream.StreamOffset
+import org.springframework.data.redis.connection.stream.StreamReadOptions
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
+import java.time.Duration
 
 @Component
 class RedisClient(
     private val template: StringRedisTemplate,
     private val objectMapper: ObjectMapper,
 ) {
-
     companion object {
         const val KEY_NOT_EXIST = -2L
         const val KEY_NO_EXPIRE = -1L
@@ -158,6 +164,91 @@ class RedisClient(
      */
     fun <T> getObj(key: String, asClass: Class<T>): T? =
         this.get(key)?.let { objectMapper.readValue(it, asClass) }
+
+    /* ---- Stream Operations ---- */
+
+    data class StreamEntry(
+        val id: String,
+        val fields: Map<String, String>,
+    )
+
+    /**
+     * Add a stream record and optionally trim the stream to max length.
+     */
+    fun streamAdd(streamKey: String, fields: Map<String, String>, maxLen: Long? = null): String {
+        ensureNotPipeline()
+        val record = MapRecord.create(streamKey, fields)
+        val recordId = notNullResult(template.opsForStream<String, String>().add(record)).value
+        if (maxLen != null && maxLen > 0) {
+            template.opsForStream<String, String>().trim(streamKey, maxLen)
+        }
+        return recordId
+    }
+
+    /**
+     * Create a consumer group for stream. Safe to call repeatedly.
+     */
+    fun streamCreateGroup(streamKey: String, groupName: String) {
+        ensureNotPipeline()
+        if (!hasKey(streamKey)) {
+            streamAdd(streamKey, mapOf("_system" to "init"), 1)
+        }
+        runCatching {
+            template.opsForStream<String, String>()
+                .createGroup(streamKey, ReadOffset.lastConsumed(), groupName)
+        }.onFailure { ex ->
+            // BUSY GROUP means a group already exists.
+            if (ex.message?.contains("BUSYGROUP") != true) {
+                throw ex
+            }
+        }
+    }
+
+    /**
+     * Read new messages (>) from stream using consumer group.
+     */
+    fun streamReadGroup(
+        streamKey: String,
+        groupName: String,
+        consumerName: String,
+        count: Int,
+        blockMs: Long,
+    ): List<StreamEntry> {
+        ensureNotPipeline()
+        val options = StreamReadOptions.empty()
+            .count(count.toLong())
+            .block(Duration.ofMillis(blockMs))
+        val records: List<MapRecord<String, String, String>> =
+            template.opsForStream<String, String>().read(
+                Consumer.from(groupName, consumerName),
+                options,
+                StreamOffset.create(streamKey, ReadOffset.lastConsumed())
+            ) ?: emptyList()
+        return records.map { StreamEntry(it.id.value, it.value) }
+    }
+
+    /**
+     * Acknowledge a message in the consumer group.
+     */
+    fun streamAck(streamKey: String, groupName: String, messageId: String): Long {
+        ensureNotPipeline()
+        return notNullResult(
+            template.opsForStream<String, String>()
+                .acknowledge(streamKey, groupName, RecordId.of(messageId))
+        )
+    }
+
+    /**
+     * Placeholder for pending message reclaim.
+     * To be upgraded with XAUTOCLAIM-based implementation.
+     */
+    fun streamAutoClaim(
+        streamKey: String,
+        groupName: String,
+        consumerName: String,
+        minIdleMs: Long,
+        count: Int,
+    ): List<StreamEntry> = emptyList()
 }
 
 /**
