@@ -16,6 +16,11 @@ interface ResumeRepo {
     fun selectById(id: UUID): Resume?
 
     /**
+     * Reads a resume by account id and file hash.
+     */
+    fun selectByAccountIdAndFileHash(accountId: UUID, fileHash: String): Resume?
+
+    /**
      * Inserts a resume and returns the inserted row as a domain object.
      */
     fun insertAndReturn(query: ResumeInsertQuery): Resume

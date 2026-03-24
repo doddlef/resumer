@@ -8,7 +8,6 @@ data class ResumeUpdateQuery(
     val content: String? = null,
     val fileHash: String? = null,
     val size: Long? = null,
-    val storageEngine: String? = null,
     val storageKey: String? = null,
     val status: ResumeStatus? = null,
     val error: String? = null,

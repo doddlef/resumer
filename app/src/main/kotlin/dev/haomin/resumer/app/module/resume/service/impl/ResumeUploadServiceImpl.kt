@@ -1,14 +1,18 @@
 package dev.haomin.resumer.app.module.resume.service.impl
 
+import dev.haomin.resumer.app.common.exception.AppException
+import dev.haomin.resumer.app.common.exception.InvalidParamException
 import dev.haomin.resumer.app.common.id.UUIDGenerator
 import dev.haomin.resumer.app.infra.file.model.WrappedFileSource
 import dev.haomin.resumer.app.module.resume.mq.ResumeAnalyzePublisher
+import dev.haomin.resumer.app.module.resume.domain.ResumeStatus
 import dev.haomin.resumer.app.module.resume.service.ResumeUploadService
 import dev.haomin.resumer.app.module.resume.service.dto.ResumeUploadCmd
 import dev.haomin.resumer.app.module.resume.service.dto.ResumeUploadResult
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ResumeUploadServiceImpl(
@@ -22,6 +26,7 @@ class ResumeUploadServiceImpl(
         val logger: Logger = LoggerFactory.getLogger(ResumeUploadServiceImpl::class.java)
     }
 
+    @Transactional
     override fun uploadAndAnalyze(cmd: ResumeUploadCmd): ResumeUploadResult {
         val accountId = cmd.accountId
         val file = WrappedFileSource(cmd.file)
@@ -39,7 +44,11 @@ class ResumeUploadServiceImpl(
         storageService.findExistingResume(hash, accountId)?.let {
             logger.info("Resume already exists for account {}, hash {}, resumeId {}", accountId, hash, it.id)
             return ResumeUploadResult(
+                resumeId = it.id,
+                name = it.filename,
+                status = it.status,
                 duplicate = true,
+                createdAt = it.createdAt,
             )
         }
 
@@ -47,7 +56,7 @@ class ResumeUploadServiceImpl(
         val content = parseService.parseResume(file)
         if (content.isBlank()) {
             logger.info("Resume content is empty after parsing for account {}, hash {}", accountId, hash)
-            throw IllegalArgumentException("Resume content is empty after parsing")
+            throw InvalidParamException("resume content is empty after parsing")
         }
 
         // 5. save file to engine
@@ -67,12 +76,23 @@ class ResumeUploadServiceImpl(
 
         // 7. public event
         val traceId = UUIDGenerator.next().toString()
-        analysisPublisher.publishResumeAnalyze(resume.id, resume.accountId, traceId)
+        runCatching {
+            analysisPublisher.publishResumeAnalyze(resume.id, resume.accountId, traceId)
+        }.onFailure { error ->
+            val errorText = "failed to publish analysis task: ${error.message ?: "unknown"}"
+            storageService.markAnalyzeFailed(resume.id, errorText)
+            logger.error("Failed to publish resume analyze event for resumeId {}, traceId {}", resume.id, traceId, error)
+            throw AppException(message = "failed to queue resume analysis")
+        }
         logger.info("Published resume analyze event for resumeId {}, accountId {}, traceId {}", resume.id, resume.accountId, traceId)
 
         // 8. return result
         return ResumeUploadResult(
+            resumeId = resume.id,
+            name = resume.filename,
+            status = ResumeStatus.PENDING,
             duplicate = false,
+            createdAt = resume.createdAt,
         )
     }
 }

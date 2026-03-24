@@ -7,6 +7,7 @@ import dev.haomin.resumer.app.module.resume.domain.Resume
 import dev.haomin.resumer.app.module.resume.domain.ResumeStatus
 import dev.haomin.resumer.app.module.resume.repo.ResumeRepo
 import dev.haomin.resumer.app.module.resume.repo.query.ResumeInsertQuery
+import dev.haomin.resumer.app.module.resume.repo.query.ResumeUpdateQuery
 import org.springframework.stereotype.Service
 import java.util.UUID
 
@@ -23,8 +24,7 @@ class ResumeStorageService(
         hashService.sha256(file)
 
     fun findExistingResume(hash: String, accountId: UUID): Resume? =
-        // TODO: find resume by content hash + account id
-        null
+        resumeRepo.selectByAccountIdAndFileHash(accountId, hash)
 
     /**
      * Upload the resume file to the storage engine,
@@ -56,4 +56,10 @@ class ResumeStorageService(
             status = ResumeStatus.PENDING,
         )
             .let { resumeRepo.insertAndReturn(it) }
+
+    fun markAnalyzeFailed(resumeId: UUID, error: String): Int =
+        ResumeUpdateQuery(
+            status = ResumeStatus.FAILED,
+            error = error,
+        ).let { resumeRepo.updateById(resumeId, it) }
 }

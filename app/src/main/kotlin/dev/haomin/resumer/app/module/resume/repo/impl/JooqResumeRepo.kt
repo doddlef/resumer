@@ -30,6 +30,18 @@ class JooqResumeRepo(
             ?.toDomain()
 
     /**
+     * Fetch resume by account id and file hash.
+     */
+    override fun selectByAccountIdAndFileHash(accountId: UUID, fileHash: String): Resume? =
+        dsl.selectFrom(RESUMES)
+            .where(RESUMES.accountId.eq(accountId))
+            .and(RESUMES.fileHash.eq(fileHash))
+            .orderBy(RESUMES.createdAt.desc())
+            .limit(1)
+            .fetchOneInto(P_Resumes::class.java)
+            ?.toDomain()
+
+    /**
      * Insert resume and return inserted row.
      */
     override fun insertAndReturn(query: ResumeInsertQuery): Resume =
