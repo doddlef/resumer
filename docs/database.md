@@ -61,3 +61,40 @@ Registration verification state is stored in Redis (ephemeral, TTL-based), not P
 - `attempt` and `email` keys use the same TTL (`attemptLifetime`).
 - `resend` uses cooldown key with `resendCooldown` TTL.
 - On successful registration confirmation, attempt/email/cooldown keys are deleted.
+
+### Resume and Analysis
+
+#### resume_status
+Enum type representing resume processing status:
+- `PENDING`: resume is uploaded, and waiting for analysis
+- `ANALYZING`: resume is being analyzed
+- `COMPLETED`: resume analysis is completed, and results are available
+- `FAILED`: resume analysis failed, and error message is available
+
+#### resumes
+Table representing uploaded resumes and their analysis status:
+- `id`: uuid, pk
+- `account_id`: uuid, fk -> `accounts.id`, not null
+- `filename`: text, original filename of the uploaded resume, not null
+- `content`: text, extracted text content from the resume file for analysis
+- `file_hash`: text, hash of the resume file for deduplication, not null
+- `size`: bigint, size of the resume file in bytes, not null
+- `storage_engine`: text, identifier for where the resume file is stored (e.g. S3 or Local), not null
+- `storage_key`: text, key or path to access the stored resume file, not null
+- `status`: resume_status, not null, default `PENDING`
+- `error`: text, optional, error message if analysis failed
+- `created_at`: timestamptz, not null
+- `updated_at`: timestamptz, not null
+
+#### resume_analysis
+Table representing the results of resume analysis:
+- `id`: uuid, pk
+- `resume_id`: uuid, fk -> `resumes.id`, not null
+- `score`: int, overall resume score (0-100), not null
+- `summary`: text, overall comment on the resume, not null
+- `strengthsJson`: jsonb, list of identified strengths with comments, not null
+- `suggestionsJson`: jsonb, list of suggestions for improvement with comments, not null
+- `created_at`: timestamptz, not null
+
+**Note**: resume can have multiple analysis records if re-analyzed after updates,
+but only the latest analysis is relevant for the current resume content.
