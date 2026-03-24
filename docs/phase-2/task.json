@@ -34,20 +34,27 @@
       "title": "Implement create/read application session service",
       "description": "Build service flows for creating a session from company/position/job description and retrieving owned session details.",
       "related": ["module.session.service", "auth.principal", "module.resume.repo"],
-      "status": "planning"
+      "status": "completed"
     },
     {
       "id": 6,
       "title": "Implement position advice generation service",
       "description": "Generate role-focused advice from job description and company/position context, then persist normalized result.",
       "related": ["common.ai", "prompt", "module.session.service"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 7,
       "title": "Implement resume-fit recommendation service",
       "description": "Generate targeted recommendations using resume content + session context, including prioritized rewrite suggestions.",
       "related": ["module.resume.service", "module.session.service", "common.ai"],
+      "status": "planning"
+    },
+    {
+      "id": 13,
+      "title": "Integrate message queue for advice generation",
+      "description": "Use Redis Stream MQ for both position advice and resume-fit advice generation flows, including publisher, consumer, retry, and failure handling.",
+      "related": ["infra.mq", "framework.redis", "module.session.service", "common.ai"],
       "status": "pending"
     },
     {
