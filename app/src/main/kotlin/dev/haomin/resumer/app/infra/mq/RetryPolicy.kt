@@ -9,6 +9,13 @@ package dev.haomin.resumer.app.infra.mq
 interface RetryPolicy {
     val maxRetry: Int
 
+    /**
+     * Determines whether an operation should be retried based on the provided error and the current attempt count.
+     *
+     * @param error The `Throwable` error that occurred during the operation.
+     * @param attempt The current retry attempt count (starting from 1 for the first retry).
+     * @return `true` if the operation should be retried, or `false` if it should not be retried and the error should be considered final.
+     */
     fun shouldRetry(error: Throwable, attempt: Int): Boolean
 }
 

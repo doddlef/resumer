@@ -61,15 +61,6 @@ abstract class AbstractStreamConsumer<T>(
 
     @PostConstruct
     fun init() {
-        start()
-    }
-
-    @PreDestroy
-    fun destroy() {
-        stop()
-    }
-
-    fun start() {
         if (!running.compareAndSet(false, true)) {
             return
         }
@@ -82,10 +73,16 @@ abstract class AbstractStreamConsumer<T>(
         logger.info("Stream consumer started: stream={}, group={}, consumer={}", streamKey, groupName, consumerName)
     }
 
-    fun stop() {
+    @PreDestroy
+    fun destroy() {
         running.set(false)
         executorService?.shutdown()
-        logger.info("Stream consumer stopped: stream={}, group={}, consumer={}", streamKey, groupName, if (::consumerName.isInitialized) consumerName else "n/a")
+        logger.info(
+            "Stream consumer stopped: stream={}, group={}, consumer={}",
+            streamKey,
+            groupName,
+            if (::consumerName.isInitialized) consumerName else "n/a"
+        )
     }
 
     private fun consumeLoop() {
