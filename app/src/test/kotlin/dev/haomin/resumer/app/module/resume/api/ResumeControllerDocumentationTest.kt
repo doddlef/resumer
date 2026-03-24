@@ -203,7 +203,11 @@ class ResumeControllerDocumentationTest @Autowired constructor(
             )
             .andReturn()
 
-        val resumeId = read(uploadResult.response.contentAsString).path("payload").path("resume").path("resumeId").asText()
+        val resumeId = read(uploadResult.response.contentAsString)
+            .path("payload")
+            .path("resume")
+            .path("resumeId")
+            .asString()
         assertNotNull(resumeId)
         waitUntilCompleted(token, resumeId)
         return resumeId
@@ -221,7 +225,7 @@ class ResumeControllerDocumentationTest @Autowired constructor(
                 .path("payload")
                 .path("resume")
                 .path("status")
-                .asText()
+                .asString()
             if (status == "COMPLETED" || status == "FAILED") {
                 return
             }

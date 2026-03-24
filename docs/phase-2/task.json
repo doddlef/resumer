@@ -48,7 +48,7 @@
       "title": "Implement resume-fit recommendation service",
       "description": "Generate targeted recommendations using resume content + session context, including prioritized rewrite suggestions.",
       "related": ["module.resume.service", "module.session.service", "common.ai"],
-      "status": "planning"
+      "status": "completed"
     },
     {
       "id": 13,

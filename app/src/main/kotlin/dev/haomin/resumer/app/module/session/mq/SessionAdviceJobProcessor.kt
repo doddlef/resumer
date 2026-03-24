@@ -1,13 +1,14 @@
 package dev.haomin.resumer.app.module.session.mq
 
-import dev.haomin.resumer.app.common.exception.AppException
 import dev.haomin.resumer.app.module.session.domain.TaskStatus
 import dev.haomin.resumer.app.module.session.mq.model.AdviceJobType
 import dev.haomin.resumer.app.module.session.mq.model.SessionAdviceJobPayload
 import dev.haomin.resumer.app.module.session.repo.ApplicationSessionRepo
 import dev.haomin.resumer.app.module.session.repo.query.ApplicationSessionUpdateQuery
 import dev.haomin.resumer.app.module.session.service.PositionAdviceService
+import dev.haomin.resumer.app.module.session.service.ResumeFitAdviceService
 import dev.haomin.resumer.app.module.session.service.dto.PositionAdviceGenerateCmd
+import dev.haomin.resumer.app.module.session.service.dto.ResumeFitAdviceGenerateCmd
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -19,6 +20,7 @@ interface SessionAdviceJobProcessor {
 class SessionAdviceJobProcessorImpl(
     private val applicationSessionRepo: ApplicationSessionRepo,
     private val positionAdviceService: PositionAdviceService,
+    private val resumeFitAdviceService: ResumeFitAdviceService,
 ) : SessionAdviceJobProcessor {
     private val logger = LoggerFactory.getLogger(SessionAdviceJobProcessorImpl::class.java)
 
@@ -80,15 +82,38 @@ class SessionAdviceJobProcessorImpl(
                 clearResumeFitError = true,
             ),
         )
-        val error = AppException(message = "resume fit advice is not implemented yet")
-        applicationSessionRepo.updateById(
-            payload.sessionId,
-            ApplicationSessionUpdateQuery(
-                resumeFitStatus = TaskStatus.FAILED,
-                resumeFitError = sanitizeError(error.message),
-            ),
-        )
-        throw error
+        runCatching {
+            resumeFitAdviceService.generate(
+                ResumeFitAdviceGenerateCmd(
+                    sessionId = payload.sessionId,
+                    accountId = payload.accountId,
+                    traceId = "resume-fit-${payload.sessionId}",
+                ),
+            )
+        }.onSuccess {
+            applicationSessionRepo.updateById(
+                payload.sessionId,
+                ApplicationSessionUpdateQuery(
+                    resumeFitStatus = TaskStatus.COMPLETED,
+                    clearResumeFitError = true,
+                ),
+            )
+        }.onFailure { error ->
+            applicationSessionRepo.updateById(
+                payload.sessionId,
+                ApplicationSessionUpdateQuery(
+                    resumeFitStatus = TaskStatus.FAILED,
+                    resumeFitError = sanitizeError(error.message),
+                ),
+            )
+            logger.error(
+                "Resume fit job failed: sessionId={}, accountId={}",
+                payload.sessionId,
+                payload.accountId,
+                error,
+            )
+            throw error
+        }
     }
 
     private fun sanitizeError(message: String?): String =
