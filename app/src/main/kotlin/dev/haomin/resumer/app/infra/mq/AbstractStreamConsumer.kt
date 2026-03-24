@@ -104,6 +104,13 @@ abstract class AbstractStreamConsumer<T>(
                 if (!running.get()) {
                     return
                 }
+                val errorText = e.message.orEmpty()
+                if (errorText.contains("LettuceConnectionFactory is STOPPING") ||
+                    errorText.contains("LettuceConnectionFactory has been STOPPED") ||
+                    errorText.contains("Connection closed")
+                ) {
+                    return
+                }
                 logger.error("Stream consume loop failed: stream={}, group={}, err={}", streamKey, groupName, e.message, e)
             }
         }

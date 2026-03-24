@@ -1,4 +1,4 @@
-# Phase 1 Summary (Auth + Resume Upload Foundation)
+# Phase 1 Summary (Completed)
 
 Updated: March 24, 2026
 
@@ -7,7 +7,7 @@ If you are new to the project, read in this order:
 1. `What Is Done`
 2. `How It Works`
 3. `Run Locally`
-4. `Next Steps`
+4. `Phase 2 Entry`
 
 ## What Is Done
 
@@ -16,6 +16,7 @@ If you are new to the project, read in this order:
 - JWT access + refresh session rotation/reuse detection are implemented.
 - Register flow (`start -> verify -> confirm -> resend`) uses Redis attempt cache.
 - Auth/register controllers and MockMvc documentation tests are in place.
+- JWT parse failures (invalid/expired) are handled with standardized JSON error responses.
 
 ### Database and repository foundation
 - Flyway migrations:
@@ -38,7 +39,7 @@ If you are new to the project, read in this order:
   - `FileEngine` abstraction
   - secure local engine with temporary signed URL endpoint
 
-### Resume upload and queue foundation
+### Resume upload, analysis, and query APIs
 - Resume upload service pipeline is implemented:
   - validate file
   - detect content type
@@ -47,26 +48,50 @@ If you are new to the project, read in this order:
   - upload file
   - persist resume
   - publish analysis message
-- Resume upload API endpoint is implemented:
+- Resume APIs implemented:
   - `POST /api/resumes/upload-and-analyze`
+  - `POST /api/resumes/{id}/reanalyze`
+  - `GET /api/resumes`
+  - `GET /api/resumes/{id}`
+  - `GET /api/resumes/{id}/status`
+- Resume analysis service is implemented:
+  - prompts + structured output parsing
+  - insert `resume_analysis`
+  - update `resumes.status` (`ANALYZING` -> `COMPLETED` / `FAILED`)
+- Ownership checks are applied to resume detail/status/reanalysis.
+
+### Redis Stream MQ foundation
 - Redis Stream MQ foundation is implemented:
   - abstract publisher/consumer
   - message wrapper + retry + DLQ flow
-  - resume-specific publisher/consumer + placeholder analysis processor
+  - resume-specific publisher/consumer + real analysis processor wiring
+  - consumer group creation made idempotent (`BUSYGROUP` safe handling)
+  - pending reclaim implemented in `streamAutoClaim` (XPENDING + XCLAIM flow)
+
+### Tests and API docs
+- Resume API documentation test added:
+  - upload, list, detail, status, reanalyze
+- Resume service coverage added:
+  - query service tests
+  - reanalysis tests
+  - upload duplicate + publish-failure tests
+- Redis integration test added for pending reclaim behavior.
 
 ## How It Works
 
-### Upload flow (current)
+### Upload + analysis flow (current)
 1. Client uploads file to `/api/resumes/upload-and-analyze`.
 2. Service validates and detects content type (`application/pdf`, `text/plain`).
 3. Service computes file hash and checks duplicate resume for account.
 4. Service parses content and uploads file to storage.
 5. Service inserts resume record (`PENDING`) and publishes analysis job.
-6. API returns upload result (`resumeId`, `name`, `status`, `duplicate`, `createdAt`).
+6. Consumer receives job, invokes analysis service, stores `resume_analysis`, updates resume status.
+7. API returns upload result (`resumeId`, `name`, `status`, `duplicate`, `createdAt`).
 
-### Analysis flow (current)
-- Resume analysis consumer receives stream message and calls placeholder processor.
-- Real analysis scoring/persistence is not implemented yet.
+### Read/query flow (current)
+- List page calls `GET /api/resumes` and receives: `id`, `name`, `status`, `score`, `createdAt`.
+- Detail page calls `GET /api/resumes/{id}` and receives latest analysis (`summary`, `strengths`, `suggestions`) plus status/error.
+- Polling calls `GET /api/resumes/{id}/status` for lightweight status updates.
 
 ## Run Locally
 
@@ -87,18 +112,9 @@ set +a
 ./gradlew app:bootRun
 ```
 
-## Next Steps (Phase 1 Completion)
-1. Implement real `ResumeAnalysisJobProcessor`:
-   - run analysis logic
-   - insert `resume_analysis`
-   - update `resumes.status` (`COMPLETED` / `FAILED`)
-2. Add resume detail/list APIs:
-   - `GET /api/resumes/{id}`
-   - `GET /api/resumes`
-   - include latest analysis summary/score
-3. Add upload + analysis integration tests:
-   - happy path
-   - duplicate path
-   - MQ publish failure path
-4. Add API docs for resume endpoints (MockMvc REST Docs).
-5. Finalize retry/DLQ operations and implement stream pending reclaim (`XAUTOCLAIM`) in Redis client.
+## Phase 2 Entry
+With Phase 1 complete, the next implementation focus is Phase 2:
+1. Add application session domain (`company`, `position`, `job description`) and APIs.
+2. Generate position-specific advice using resume + position context.
+3. Add cover letter generation endpoint and persistence.
+4. Introduce minimal history views for session runs and generated outputs.

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
 import java.time.Duration
 import io.lettuce.core.RedisBusyException
+import org.springframework.data.domain.Range
 
 @Component
 class RedisClient(
@@ -255,8 +256,9 @@ class RedisClient(
     }
 
     /**
-     * Placeholder for pending message reclaim.
-     * To be upgraded with XAUTOCLAIM-based implementation.
+     * Reclaim stale pending messages from other consumers.
+     *
+     * Current implementation uses XPENDING + XCLAIM, which works across Redis versions.
      */
     fun streamAutoClaim(
         streamKey: String,
@@ -264,7 +266,36 @@ class RedisClient(
         consumerName: String,
         minIdleMs: Long,
         count: Int,
-    ): List<StreamEntry> = emptyList()
+    ): List<StreamEntry> {
+        ensureNotPipeline()
+        if (count <= 0) {
+            return emptyList()
+        }
+
+        val operations = template.opsForStream<String, String>()
+        val pending = operations.pending(streamKey, groupName, Range.unbounded<String>(), count.toLong())
+        if (pending.isEmpty()) {
+            return emptyList()
+        }
+
+        val idsToClaim = pending
+            .asSequence()
+            .filter { it.elapsedTimeSinceLastDelivery.toMillis() >= minIdleMs }
+            .map { RecordId.of(it.idAsString) }
+            .toList()
+        if (idsToClaim.isEmpty()) {
+            return emptyList()
+        }
+
+        val claimed = operations.claim(
+            streamKey,
+            groupName,
+            consumerName,
+            Duration.ofMillis(minIdleMs),
+            *idsToClaim.toTypedArray(),
+        )
+        return claimed.map { StreamEntry(it.id.value, it.value) }
+    }
 }
 
 /**

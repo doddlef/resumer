@@ -24,9 +24,9 @@ import java.util.UUID
 @RequestMapping("/api/resumes")
 class ResumeController(
     private val principalProvider: PrincipalProvider,
+    private val resumeQueryService: ResumeQueryService,
     private val resumeUploadService: ResumeUploadService,
     private val resumeReanalysisService: ResumeReanalysisService,
-    private val resumeQueryService: ResumeQueryService,
 ) {
 
     @PostMapping("/upload-and-analyze")

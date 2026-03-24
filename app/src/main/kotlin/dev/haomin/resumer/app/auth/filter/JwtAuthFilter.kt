@@ -3,7 +3,7 @@ package dev.haomin.resumer.app.auth.filter
 import dev.haomin.resumer.app.auth.AUTHORIZATION_HEADER
 import dev.haomin.resumer.app.auth.BEAR_TOKEN_PREFIX
 import dev.haomin.resumer.app.auth.service.TokenService
-import jakarta.security.auth.message.AuthException
+import dev.haomin.resumer.app.common.exception.AppException
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -49,7 +49,7 @@ class JwtAuthFilter(
                     .apply { this.authentication = authentication }
                     .let { SecurityContextHolder.setContext(it) }
             }
-        } catch (ex: AuthException) {
+        } catch (ex: AppException) {
             SecurityContextHolder.clearContext()
             exceptionResolver.resolveException(request, response, null, ex)
             return

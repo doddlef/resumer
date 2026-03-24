@@ -60,4 +60,37 @@ class RedisClientIntegrationTest(
         assertNull(redisClient.getExpire(key, TimeUnit.SECONDS))
         assertNull(redisClient.get(key))
     }
+
+    @Test
+    fun `stream auto claim should reclaim stale pending message`() {
+        val streamKey = "test:redis:stream:${UUID.randomUUID()}"
+        val group = "g1"
+        val consumerA = "c-a"
+        val consumerB = "c-b"
+
+        redisClient.streamCreateGroup(streamKey, group)
+        redisClient.streamAdd(streamKey, mapOf("k" to "v"))
+
+        // Consume as consumer A without ack so it becomes pending.
+        val consumed = redisClient.streamReadGroup(
+            streamKey = streamKey,
+            groupName = group,
+            consumerName = consumerA,
+            count = 10,
+            blockMs = 100,
+        )
+        assertEquals(1, consumed.size)
+
+        val reclaimed = redisClient.streamAutoClaim(
+            streamKey = streamKey,
+            groupName = group,
+            consumerName = consumerB,
+            minIdleMs = 0,
+            count = 10,
+        )
+
+        assertEquals(1, reclaimed.size)
+        assertEquals(consumed.first().id, reclaimed.first().id)
+        assertEquals("v", reclaimed.first().fields["k"])
+    }
 }

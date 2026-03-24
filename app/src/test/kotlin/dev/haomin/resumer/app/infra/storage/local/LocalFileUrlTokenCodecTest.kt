@@ -36,7 +36,9 @@ class LocalFileUrlTokenCodecTest {
     @Test
     fun `decodeReadKey should throw when token is tampered`() {
         val token = codec.encodeReadKey("resume/123/file.txt", Duration.ofMinutes(1))
-        val tampered = token.dropLast(1) + if (token.last() == 'a') "b" else "a"
+        val index = token.length / 2
+        val replacement = if (token[index] == 'a') 'b' else 'a'
+        val tampered = token.substring(0, index) + replacement + token.substring(index + 1)
 
         assertThrows(InvalidParamException::class.java) {
             codec.decodeReadKey(tampered)
