@@ -18,3 +18,4 @@ Resumer.iml
 
 # Ignore agent directory
 /agent/
+/app/.local-storage/

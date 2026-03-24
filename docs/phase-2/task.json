@@ -83,14 +83,14 @@
       "title": "Add tests for phase 2",
       "description": "Add unit/integration tests for services and APIs, including error paths and ownership violations.",
       "related": ["app/src/test/kotlin", "SpringBootTest", "MockMvc", "Testcontainers"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 12,
       "title": "Add API docs and phase 2 summary",
       "description": "Add MockMvc REST Docs snippets for new endpoints and write docs/phase-2 summary for onboarding and handoff.",
       "related": ["Spring REST Docs", "docs/phase-2", "docs/roadmap.md"],
-      "status": "pending"
+      "status": "completed"
     }
   ]
 }
