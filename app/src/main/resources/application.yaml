@@ -17,7 +17,7 @@ spring:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
       chat:
         options:
-          model: ${AI_MODEL:llama3.1}
+          model: ${AI_MODEL:llama3:8b}
           temperature: ${AI_TEMPERATURE:0.2}
     openai:
       api-key: ${OPENAI_API_KEY:}

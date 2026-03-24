@@ -19,7 +19,14 @@ data class ResumeAnalysis(
     val resumeId: UUID,
     val score: Int,
     val summary: String,
-    val strengthsJson: String,
-    val suggestionsJson: String,
+    val strengths: List<String>,
+    val suggestions: List<ResumeSuggestion>,
     val createdAt: OffsetDateTime,
+)
+
+data class ResumeSuggestion(
+    val category: String,
+    val priority: String,
+    val issue: String,
+    val recommendation: String,
 )

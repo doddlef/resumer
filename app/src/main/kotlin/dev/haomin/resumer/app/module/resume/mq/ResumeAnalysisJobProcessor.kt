@@ -1,6 +1,8 @@
 package dev.haomin.resumer.app.module.resume.mq
 
 import dev.haomin.resumer.app.module.resume.mq.model.ResumeAnalyzePayload
+import dev.haomin.resumer.app.module.resume.service.ResumeAnalysisService
+import dev.haomin.resumer.app.module.resume.service.dto.ResumeAnalyzeCmd
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -9,13 +11,20 @@ interface ResumeAnalysisJobProcessor {
 }
 
 @Service
-class PlaceholderResumeAnalysisJobProcessor : ResumeAnalysisJobProcessor {
-    private val logger = LoggerFactory.getLogger(PlaceholderResumeAnalysisJobProcessor::class.java)
+class ResumeAnalysisJobProcessorImpl(
+    private val resumeAnalysisService: ResumeAnalysisService,
+) : ResumeAnalysisJobProcessor {
+    private val logger = LoggerFactory.getLogger(ResumeAnalysisJobProcessorImpl::class.java)
 
     override fun process(payload: ResumeAnalyzePayload) {
-        // Placeholder: wire real resume analysis pipeline here.
+        val cmd = ResumeAnalyzeCmd(
+            resumeId = payload.resumeId,
+            accountId = payload.accountId,
+            traceId = "resume-analysis-${payload.resumeId}",
+        )
+        resumeAnalysisService.analyze(cmd)
         logger.info(
-            "[placeholder] resume analysis requested: resumeId={}, accountId={}",
+            "resume analysis finished: resumeId={}, accountId={}",
             payload.resumeId,
             payload.accountId,
         )
