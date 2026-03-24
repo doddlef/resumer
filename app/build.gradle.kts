@@ -45,6 +45,8 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
+	implementation(platform(libs.spring.ai.bom))
+
 	// Main Spring Boot
 	implementation(libs.spring.boot.starter.data.redis)
 	implementation(libs.spring.boot.starter.flyway)
@@ -60,6 +62,8 @@ dependencies {
 	implementation(libs.jooq.postgres.extension)
 	implementation(libs.kotlin.reflect)
 	implementation(libs.lettuce.core)
+	implementation(libs.spring.ai.starter.model.ollama)
+	implementation(libs.spring.ai.starter.model.openai)
 	implementation(libs.tika.core)
 	implementation(libs.tika.parsers)
 	implementation(libs.uuid.creator)

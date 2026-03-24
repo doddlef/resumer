@@ -10,9 +10,28 @@ spring:
     url: ${POSTGRES_URL}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+  ai:
+    model:
+      chat: ${AI_PROVIDER:ollama}
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${AI_MODEL:llama3.1}
+          temperature: ${AI_TEMPERATURE:0.2}
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
+      chat:
+        options:
+          model: ${AI_MODEL:gpt-4.1-mini}
+          temperature: ${AI_TEMPERATURE:0.2}
 
 resumer:
   ai:
+    provider: ${AI_PROVIDER:ollama}
+    model: ${AI_MODEL:llama3.1}
+    temperature: ${AI_TEMPERATURE:0.2}
     structured:
       max-attempts: ${AI_STRUCTURED_MAX_ATTEMPTS:2}
       include-last-error-in-retry-prompt: ${AI_STRUCTURED_INCLUDE_LAST_ERROR:true}
