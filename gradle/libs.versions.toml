@@ -19,7 +19,7 @@ testcontainers = "2.0.1"
 testcontainersRedis = "2.2.2"
 mockitoKotlin = "5.4.0"
 uuid = "5.2.0" # UUID Creator version
-springAi = "1.0.3"
+spring-ai = "2.0.0-M1"
 
 [plugins]
 # Kotlin
@@ -66,7 +66,7 @@ lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
 tika-core = { module = "org.apache.tika:tika-core", version.ref = "tika" }
 tika-parsers = { module = "org.apache.tika:tika-parsers-standard-package", version.ref = "tika" }
 uuid-creator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "uuid" }
-spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "springAi" }
+spring-ai-bom = { module = "org.springframework.ai:spring-ai-bom", version.ref = "spring-ai" }
 spring-ai-starter-model-ollama = { module = "org.springframework.ai:spring-ai-starter-model-ollama" }
 spring-ai-starter-model-openai = { module = "org.springframework.ai:spring-ai-starter-model-openai" }
 

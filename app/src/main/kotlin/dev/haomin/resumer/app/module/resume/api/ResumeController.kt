@@ -2,20 +2,25 @@ package dev.haomin.resumer.app.module.resume.api
 
 import dev.haomin.resumer.app.auth.principal.PrincipalProvider
 import dev.haomin.resumer.app.common.response.ApiResponse
+import dev.haomin.resumer.app.module.resume.service.ResumeReanalysisService
 import dev.haomin.resumer.app.module.resume.service.ResumeUploadService
+import dev.haomin.resumer.app.module.resume.service.dto.ResumeReanalyzeCmd
 import dev.haomin.resumer.app.module.resume.service.dto.ResumeUploadCmd
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/resumes")
 class ResumeController(
     private val principalProvider: PrincipalProvider,
     private val resumeUploadService: ResumeUploadService,
+    private val resumeReanalysisService: ResumeReanalysisService,
 ) {
 
     @PostMapping("/upload-and-analyze")
@@ -29,6 +34,22 @@ class ResumeController(
             )
         )
         val body = ApiResponse.success("resume uploaded")
+            .with("resume", result)
+            .build()
+        return ResponseEntity.ok(body)
+    }
+
+    @PostMapping("/{resumeId}/reanalyze")
+    fun reanalyze(
+        @PathVariable resumeId: UUID,
+    ): ResponseEntity<ApiResponse> {
+        val result = resumeReanalysisService.reanalyze(
+            ResumeReanalyzeCmd(
+                resumeId = resumeId,
+                accountId = principalProvider.requireCurrentId(),
+            ),
+        )
+        val body = ApiResponse.success("resume reanalysis queued")
             .with("resume", result)
             .build()
         return ResponseEntity.ok(body)

@@ -11,5 +11,6 @@ data class ResumeUpdateQuery(
     val storageKey: String? = null,
     val status: ResumeStatus? = null,
     val error: String? = null,
+    val clearError: Boolean = false,
     val updatedAt: OffsetDateTime = OffsetDateTime.now(),
 )

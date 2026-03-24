@@ -75,7 +75,11 @@ class JooqResumeRepo(
                 query.size?.let { set(RESUMES.size, it) }
                 query.storageKey?.let { set(RESUMES.storageKey, it) }
                 query.status?.let { set(RESUMES.status, it.toJooq()) }
-                query.error?.let { set(RESUMES.error, it) }
+                if (query.clearError) {
+                    set(RESUMES.error, null as String?)
+                } else {
+                    query.error?.let { set(RESUMES.error, it) }
+                }
                 set(RESUMES.updatedAt, query.updatedAt)
             }
             .let { record ->
