@@ -31,7 +31,6 @@ Recommended item shape:
 - Cover letter output format starts as **Markdown**.
 - Storage type is **TEXT** in database.
 - Add metadata:
-  - `format`: fixed value `markdown`.
   - `version`: incremental integer per session.
 - Source-of-truth remains raw Markdown text.
 

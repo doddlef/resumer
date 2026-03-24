@@ -97,3 +97,40 @@ Table representing the results of resume analysis:
 
 **Note**: resume can have multiple analysis records if re-analyzed after updates,
 but only the latest analysis is relevant for the current resume content.
+
+### Application Session and Career Guidance (Phase 2)
+
+#### application_sessions
+Table representing one target application context:
+- `id`: uuid, pk
+- `account_id`: uuid, fk -> `accounts.id`, not null
+- `resume_id`: uuid, fk -> `resumes.id`, nullable, `on delete set null`
+- `company`: text, target company name, not null
+- `position`: text, target position title, not null
+- `job_description`: text, target position description, not null
+- `created_at`: timestamptz, not null
+- `updated_at`: timestamptz, not null
+
+#### session_advice
+Table representing generated position and resume-fit guidance:
+- `id`: uuid, pk
+- `session_id`: uuid, fk -> `application_sessions.id`, not null
+- `position_summary`: text, summary of role/company preparation, not null
+- `key_requirements_json`: jsonb, list of key role requirements, not null
+- `likely_interview_focus_json`: jsonb, list of likely interview focuses, not null
+- `red_flags_json`: jsonb, list of missing/weak areas, not null
+- `fit_score`: int, overall fit score (0-100), not null
+- `gaps_json`: jsonb, list of candidate gaps for this session, not null
+- `rewrite_suggestions_json`: jsonb, structured rewrite suggestions for resume fit, not null
+- `created_at`: timestamptz, not null
+
+#### session_cover_letters
+Table representing generated cover letter versions:
+- `id`: uuid, pk
+- `session_id`: uuid, fk -> `application_sessions.id`, not null
+- `version`: int, version number per session, not null
+- `content`: text, cover letter markdown content, not null
+- `created_at`: timestamptz, not null
+
+**Note**: cover letter is generated in markdown format, but stored as text.
+Regeneration creates a new version row instead of overwriting old content.

@@ -20,21 +20,21 @@
       "title": "Create database migration for phase 2",
       "description": "Add Flyway migration for session/advice/cover-letter tables, constraints, indexes, and foreign keys to account and resume.",
       "related": ["app/src/main/resources/db/migration", "docs/database.md", "jooq"],
-      "status": "planning"
+      "status": "completed"
     },
     {
       "id": 4,
       "title": "Implement repository layer for session and generation records",
       "description": "Add repo contracts, query objects, and jOOQ implementations for create/read/update session and generated content records.",
       "related": ["docs/style/domain-repo-style.md", "module.session.repo", "jooq-generated"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 5,
       "title": "Implement create/read application session service",
       "description": "Build service flows for creating a session from company/position/job description and retrieving owned session details.",
       "related": ["module.session.service", "auth.principal", "module.resume.repo"],
-      "status": "pending"
+      "status": "planning"
     },
     {
       "id": 6,

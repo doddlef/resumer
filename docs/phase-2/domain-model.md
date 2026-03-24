@@ -63,7 +63,6 @@ Stores cover letters as versioned Markdown text.
 - `id`: uuid, pk
 - `session_id`: uuid, fk -> `application_sessions.id`, not null
 - `version`: int, not null (starts at 1, increments per session)
-- `format`: text, not null, default `markdown`
 - `content`: text, not null
 - `created_at`: timestamptz, not null
 
@@ -75,7 +74,6 @@ Indexes:
 
 Constraints:
 - `content` trimmed non-blank.
-- `format = 'markdown'` for Phase 2.
 
 ## 4) Domain objects (Kotlin)
 
