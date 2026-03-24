@@ -63,7 +63,6 @@ dependencies {
 	implementation(libs.kotlin.reflect)
 	implementation(libs.lettuce.core)
 	implementation(libs.spring.ai.starter.model.ollama)
-	implementation(libs.spring.ai.starter.model.openai)
 	implementation(libs.tika.core)
 	implementation(libs.tika.parsers)
 	implementation(libs.uuid.creator)

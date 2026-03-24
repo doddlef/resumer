@@ -7,11 +7,9 @@ import dev.haomin.resumer.app.infra.mq.RetryPolicy
 import dev.haomin.resumer.app.infra.mq.StreamSerde
 import dev.haomin.resumer.app.module.resume.mq.model.ResumeAnalyzePayload
 import dev.haomin.resumer.app.module.resume.mq.prop.ResumeMqProps
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.stereotype.Service
 
 @Service
-@ConditionalOnProperty(prefix = "resumer.resume.mq", name = ["enabled"], havingValue = "true")
 class ResumeAnalyzeConsumer(
     redisClient: RedisClient,
     private val props: ResumeMqProps,

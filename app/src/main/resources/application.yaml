@@ -17,14 +17,7 @@ spring:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
       chat:
         options:
-          model: ${AI_MODEL:llama3:8b}
-          temperature: ${AI_TEMPERATURE:0.2}
-    openai:
-      api-key: ${OPENAI_API_KEY:}
-      base-url: ${OPENAI_BASE_URL:https://api.openai.com}
-      chat:
-        options:
-          model: ${AI_MODEL:gpt-4.1-mini}
+          model: ${AI_MODEL:qwen3:latest}
           temperature: ${AI_TEMPERATURE:0.2}
 
 resumer:
@@ -50,3 +43,16 @@ resumer:
       public-base-url: ${STORAGE_LOCAL_PUBLIC_BASE_URL:}
       temp-url-secret: ${STORAGE_LOCAL_TEMP_URL_SECRET:local_temp_url_secret_change_me_12345678901234567890}
       default-ttl: ${STORAGE_LOCAL_DEFAULT_TTL:5m}
+  resume:
+    mq:
+      stream-key: ${RESUME_MQ_STREAM_KEY:resumer.resume.analysis.v1}
+      dlq-stream-key: ${RESUME_MQ_DLQ_STREAM_KEY:resumer.resume.analysis.v1.dlq}
+      stream-max-len: ${RESUME_MQ_STREAM_MAX_LEN:100000}
+      dlq-stream-max-len: ${RESUME_MQ_DLQ_STREAM_MAX_LEN:10000}
+      group-name: ${RESUME_MQ_GROUP_NAME:resume-analysis-workers}
+      consumer-prefix: ${RESUME_MQ_CONSUMER_PREFIX:resume-analysis}
+      batch-size: ${RESUME_MQ_BATCH_SIZE:10}
+      poll-block-ms: ${RESUME_MQ_POLL_BLOCK_MS:5000}
+      reclaim-idle-ms: ${RESUME_MQ_RECLAIM_IDLE_MS:60000}
+      reclaim-batch-size: ${RESUME_MQ_RECLAIM_BATCH_SIZE:10}
+      max-retry: ${RESUME_MQ_MAX_RETRY:3}

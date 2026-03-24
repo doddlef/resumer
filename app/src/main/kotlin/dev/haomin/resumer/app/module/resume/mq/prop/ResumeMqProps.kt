@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "resumer.resume.mq")
 data class ResumeMqProps(
-    val enabled: Boolean = false,
     val streamKey: String = "resumer.resume.analysis.v1",
     val dlqStreamKey: String = "resumer.resume.analysis.v1.dlq",
     val streamMaxLen: Long = 100_000,

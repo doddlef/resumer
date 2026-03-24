@@ -195,7 +195,7 @@ class RedisClient(
         }
         runCatching {
             template.opsForStream<String, String>()
-                .createGroup(streamKey, ReadOffset.lastConsumed(), groupName)
+                .createGroup(streamKey, ReadOffset.latest(), groupName)
         }.onFailure { ex ->
             // BUSY GROUP means a group already exists.
             if (ex.message?.contains("BUSYGROUP") != true) {

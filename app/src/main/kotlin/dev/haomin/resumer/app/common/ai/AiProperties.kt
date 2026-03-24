@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "resumer.ai")
 data class AiProperties(
     val provider: AiProvider = AiProvider.OLLAMA,
-    val model: String = "llama3:8b",
+    val model: String = "qwen3:latest",
     val temperature: Double = 0.2,
 )
 
