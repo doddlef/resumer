@@ -1,0 +1,89 @@
+{
+  "title": "phase 2: application session, position-specific guidance, and cover letter",
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Finalize phase 2 scope and acceptance criteria",
+      "description": "Define exact outputs for session advice, resume-fit suggestions, and cover letter so API/data design can be fixed before coding.",
+      "related": ["docs/roadmap.md", "docs/phase1-summary.md", "product-scope"],
+      "status": "completed"
+    },
+    {
+      "id": 2,
+      "title": "Design phase 2 domain model",
+      "description": "Model entities for application session, generated advice, resume-fit recommendations, and cover letter history with ownership and timestamps.",
+      "related": ["docs/database.md", "module.session.domain", "module.resume.domain"],
+      "status": "completed"
+    },
+    {
+      "id": 3,
+      "title": "Create database migration for phase 2",
+      "description": "Add Flyway migration for session/advice/cover-letter tables, constraints, indexes, and foreign keys to account and resume.",
+      "related": ["app/src/main/resources/db/migration", "docs/database.md", "jooq"],
+      "status": "planning"
+    },
+    {
+      "id": 4,
+      "title": "Implement repository layer for session and generation records",
+      "description": "Add repo contracts, query objects, and jOOQ implementations for create/read/update session and generated content records.",
+      "related": ["docs/style/domain-repo-style.md", "module.session.repo", "jooq-generated"],
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "title": "Implement create/read application session service",
+      "description": "Build service flows for creating a session from company/position/job description and retrieving owned session details.",
+      "related": ["module.session.service", "auth.principal", "module.resume.repo"],
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "title": "Implement position advice generation service",
+      "description": "Generate role-focused advice from job description and company/position context, then persist normalized result.",
+      "related": ["common.ai", "prompt", "module.session.service"],
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "title": "Implement resume-fit recommendation service",
+      "description": "Generate targeted recommendations using resume content + session context, including prioritized rewrite suggestions.",
+      "related": ["module.resume.service", "module.session.service", "common.ai"],
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "title": "Implement cover letter generation service",
+      "description": "Generate and store cover letters per session, with regeneration support and version/history tracking.",
+      "related": ["module.session.service", "common.ai", "module.resume.repo"],
+      "status": "pending"
+    },
+    {
+      "id": 9,
+      "title": "Expose phase 2 APIs",
+      "description": "Add controllers/endpoints for session create/detail, advice generation/read, resume-fit suggestions, and cover letter generation/read.",
+      "related": ["module.session.api", "SecurityConfiguration", "ApiResponse"],
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "title": "Add validation and ownership enforcement",
+      "description": "Enforce input limits, required fields, and strict account ownership checks across all session/advice/cover-letter endpoints.",
+      "related": ["common.exception", "framework.advice", "auth.principal"],
+      "status": "pending"
+    },
+    {
+      "id": 11,
+      "title": "Add tests for phase 2",
+      "description": "Add unit/integration tests for services and APIs, including error paths and ownership violations.",
+      "related": ["app/src/test/kotlin", "SpringBootTest", "MockMvc", "Testcontainers"],
+      "status": "pending"
+    },
+    {
+      "id": 12,
+      "title": "Add API docs and phase 2 summary",
+      "description": "Add MockMvc REST Docs snippets for new endpoints and write docs/phase-2 summary for onboarding and handoff.",
+      "related": ["Spring REST Docs", "docs/phase-2", "docs/roadmap.md"],
+      "status": "pending"
+    }
+  ]
+}
