@@ -60,6 +60,8 @@ class ApplicationSessionServiceImpl(
                     resumeId = it.resumeId,
                     company = it.company,
                     position = it.position,
+                    positionAdviceStatus = it.positionAdviceStatus,
+                    resumeFitStatus = it.resumeFitStatus,
                     createdAt = it.createdAt,
                 )
             },
@@ -74,6 +76,10 @@ class ApplicationSessionServiceImpl(
             company = session.company,
             position = session.position,
             jobDescription = session.jobDescription,
+            positionAdviceStatus = session.positionAdviceStatus,
+            positionAdviceError = session.positionAdviceError,
+            resumeFitStatus = session.resumeFitStatus,
+            resumeFitError = session.resumeFitError,
             createdAt = session.createdAt,
             updatedAt = session.updatedAt,
         )

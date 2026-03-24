@@ -1,8 +1,10 @@
 package dev.haomin.resumer.app.module.session.repo.impl
 
+import dev.haomin.filesheep.jooq.enums.E_SessionTaskStatus
 import dev.haomin.filesheep.jooq.tables.pojos.P_ApplicationSessions
 import dev.haomin.filesheep.jooq.tables.references.APPLICATION_SESSIONS
 import dev.haomin.resumer.app.module.session.domain.ApplicationSession
+import dev.haomin.resumer.app.module.session.domain.TaskStatus
 import dev.haomin.resumer.app.module.session.repo.ApplicationSessionRepo
 import dev.haomin.resumer.app.module.session.repo.query.ApplicationSessionInsertQuery
 import dev.haomin.resumer.app.module.session.repo.query.ApplicationSessionUpdateQuery
@@ -39,6 +41,8 @@ class JooqApplicationSessionRepo(
                 this.jobDescription = query.jobDescription
                 this.createdAt = query.createdAt
                 this.updatedAt = query.updatedAt
+                this.positionAdviceStatus = TaskStatus.PENDING.toJooq()
+                this.resumeFitStatus = TaskStatus.PENDING.toJooq()
             }
             .let { dsl.insertInto(APPLICATION_SESSIONS).set(it).returning().fetchOneInto(P_ApplicationSessions::class.java) }
             ?.toDomain()
@@ -51,6 +55,18 @@ class JooqApplicationSessionRepo(
                 query.company?.let { set(APPLICATION_SESSIONS.company, it) }
                 query.position?.let { set(APPLICATION_SESSIONS.position, it) }
                 query.jobDescription?.let { set(APPLICATION_SESSIONS.jobDescription, it) }
+                query.positionAdviceStatus?.let { set(APPLICATION_SESSIONS.positionAdviceStatus, it.toJooq()) }
+                if (query.clearPositionAdviceError) {
+                    set(APPLICATION_SESSIONS.positionAdviceError, null as String?)
+                } else {
+                    query.positionAdviceError?.let { set(APPLICATION_SESSIONS.positionAdviceError, it) }
+                }
+                query.resumeFitStatus?.let { set(APPLICATION_SESSIONS.resumeFitStatus, it.toJooq()) }
+                if (query.clearResumeFitError) {
+                    set(APPLICATION_SESSIONS.resumeFitError, null as String?)
+                } else {
+                    query.resumeFitError?.let { set(APPLICATION_SESSIONS.resumeFitError, it) }
+                }
                 set(APPLICATION_SESSIONS.updatedAt, query.updatedAt)
             }
             .let { record ->
@@ -72,4 +88,12 @@ internal fun P_ApplicationSessions.toDomain(): ApplicationSession =
         jobDescription = requireNotNull(jobDescription) { "ApplicationSession.jobDescription is null" },
         createdAt = requireNotNull(createdAt) { "ApplicationSession.createdAt is null" },
         updatedAt = requireNotNull(updatedAt) { "ApplicationSession.updatedAt is null" },
+        positionAdviceStatus = requireNotNull(positionAdviceStatus) { "ApplicationSession.positionAdviceStatus is null" }.toDomain(),
+        positionAdviceError = positionAdviceError,
+        resumeFitStatus = requireNotNull(resumeFitStatus) { "ApplicationSession.resumeFitStatus is null" }.toDomain(),
+        resumeFitError = resumeFitError,
     )
+
+internal fun TaskStatus.toJooq(): E_SessionTaskStatus = E_SessionTaskStatus.valueOf(name)
+
+internal fun E_SessionTaskStatus.toDomain(): TaskStatus = TaskStatus.fromString(name)

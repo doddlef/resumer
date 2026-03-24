@@ -53,3 +53,16 @@ resumer:
       reclaim-idle-ms: ${RESUME_MQ_RECLAIM_IDLE_MS:60000}
       reclaim-batch-size: ${RESUME_MQ_RECLAIM_BATCH_SIZE:10}
       max-retry: ${RESUME_MQ_MAX_RETRY:3}
+  session:
+    mq:
+      stream-key: ${SESSION_MQ_STREAM_KEY:resumer.session.advice.v1}
+      dlq-stream-key: ${SESSION_MQ_DLQ_STREAM_KEY:resumer.session.advice.v1.dlq}
+      stream-max-len: ${SESSION_MQ_STREAM_MAX_LEN:100000}
+      dlq-stream-max-len: ${SESSION_MQ_DLQ_STREAM_MAX_LEN:10000}
+      group-name: ${SESSION_MQ_GROUP_NAME:session-advice-workers}
+      consumer-prefix: ${SESSION_MQ_CONSUMER_PREFIX:session-advice}
+      batch-size: ${SESSION_MQ_BATCH_SIZE:10}
+      poll-block-ms: ${SESSION_MQ_POLL_BLOCK_MS:5000}
+      reclaim-idle-ms: ${SESSION_MQ_RECLAIM_IDLE_MS:60000}
+      reclaim-batch-size: ${SESSION_MQ_RECLAIM_BATCH_SIZE:10}
+      max-retry: ${SESSION_MQ_MAX_RETRY:3}

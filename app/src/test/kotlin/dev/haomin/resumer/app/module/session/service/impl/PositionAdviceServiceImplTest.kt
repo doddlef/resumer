@@ -7,6 +7,7 @@ import dev.haomin.resumer.app.common.exception.AppException
 import dev.haomin.resumer.app.common.exception.NotFoundException
 import dev.haomin.resumer.app.module.session.domain.ApplicationSession
 import dev.haomin.resumer.app.module.session.domain.SessionAdvice
+import dev.haomin.resumer.app.module.session.domain.TaskStatus
 import dev.haomin.resumer.app.module.session.repo.ApplicationSessionRepo
 import dev.haomin.resumer.app.module.session.repo.SessionAdviceRepo
 import dev.haomin.resumer.app.module.session.repo.query.SessionAdviceInsertQuery
@@ -157,6 +158,10 @@ class PositionAdviceServiceImplTest {
             jobDescription = "Build scalable services",
             createdAt = now,
             updatedAt = now,
+            positionAdviceStatus = TaskStatus.PENDING,
+            positionAdviceError = null,
+            resumeFitStatus = TaskStatus.PENDING,
+            resumeFitError = null,
         )
     }
 }

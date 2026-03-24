@@ -100,6 +100,13 @@ but only the latest analysis is relevant for the current resume content.
 
 ### Application Session and Career Guidance (Phase 2)
 
+#### session_task_status
+Enum type representing async advice task status:
+- `PENDING`
+- `PROCESSING`
+- `COMPLETED`
+- `FAILED`
+
 #### application_sessions
 Table representing one target application context:
 - `id`: uuid, pk
@@ -108,6 +115,10 @@ Table representing one target application context:
 - `company`: text, target company name, not null
 - `position`: text, target position title, not null
 - `job_description`: text, target position description, not null
+- `position_advice_status`: session_task_status, status of position advice job
+- `position_advice_error`: text, optional error of position advice job
+- `resume_fit_status`: session_task_status, status of resume-fit advice job
+- `resume_fit_error`: text, optional error of resume-fit advice job
 - `created_at`: timestamptz, not null
 - `updated_at`: timestamptz, not null
 

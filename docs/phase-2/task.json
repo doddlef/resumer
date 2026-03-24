@@ -55,7 +55,7 @@
       "title": "Integrate message queue for advice generation",
       "description": "Use Redis Stream MQ for both position advice and resume-fit advice generation flows, including publisher, consumer, retry, and failure handling.",
       "related": ["infra.mq", "framework.redis", "module.session.service", "common.ai"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 8,

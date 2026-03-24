@@ -1,5 +1,6 @@
 package dev.haomin.resumer.app.module.session.service.dto
 
+import dev.haomin.resumer.app.module.session.domain.TaskStatus
 import java.time.OffsetDateTime
 import java.util.UUID
 
@@ -33,6 +34,8 @@ data class ApplicationSessionListItem(
     val resumeId: UUID?,
     val company: String,
     val position: String,
+    val positionAdviceStatus: TaskStatus,
+    val resumeFitStatus: TaskStatus,
     val createdAt: OffsetDateTime,
 )
 
@@ -47,6 +50,10 @@ data class ApplicationSessionDetailResult(
     val company: String,
     val position: String,
     val jobDescription: String,
+    val positionAdviceStatus: TaskStatus,
+    val positionAdviceError: String?,
+    val resumeFitStatus: TaskStatus,
+    val resumeFitError: String?,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )

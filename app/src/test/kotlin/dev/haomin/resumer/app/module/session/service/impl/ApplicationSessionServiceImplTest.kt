@@ -5,6 +5,7 @@ import dev.haomin.resumer.app.module.resume.domain.Resume
 import dev.haomin.resumer.app.module.resume.domain.ResumeStatus
 import dev.haomin.resumer.app.module.resume.repo.ResumeRepo
 import dev.haomin.resumer.app.module.session.domain.ApplicationSession
+import dev.haomin.resumer.app.module.session.domain.TaskStatus
 import dev.haomin.resumer.app.module.session.repo.ApplicationSessionRepo
 import dev.haomin.resumer.app.module.session.repo.query.ApplicationSessionInsertQuery
 import dev.haomin.resumer.app.module.session.service.dto.ApplicationSessionCreateCmd
@@ -48,9 +49,13 @@ class ApplicationSessionServiceImplTest {
                 company = q.company,
                 position = q.position,
                 jobDescription = q.jobDescription,
-                createdAt = q.createdAt,
-                updatedAt = q.updatedAt,
-            )
+            createdAt = q.createdAt,
+            updatedAt = q.updatedAt,
+            positionAdviceStatus = TaskStatus.PENDING,
+            positionAdviceError = null,
+            resumeFitStatus = TaskStatus.PENDING,
+            resumeFitError = null,
+        )
         }
 
         val result = service.create(
@@ -141,6 +146,10 @@ class ApplicationSessionServiceImplTest {
             jobDescription = "Job description",
             createdAt = now,
             updatedAt = now,
+            positionAdviceStatus = TaskStatus.PENDING,
+            positionAdviceError = null,
+            resumeFitStatus = TaskStatus.PENDING,
+            resumeFitError = null,
         )
     }
 

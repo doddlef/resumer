@@ -50,7 +50,7 @@ Recommended item shape:
 
 ## Execution Rules
 
-1. Sync generation first (advice + cover letter) for Phase 2 simplicity.
+1. Position advice and resume-fit advice generation run via Redis Stream MQ (async).
 2. Enforce ownership checks on all session/advice/cover-letter operations.
 3. Enforce field limits and non-empty validation in service layer.
 4. API docs and tests are required before marking Phase 2 task as completed.

@@ -12,4 +12,8 @@ data class ApplicationSession(
     val jobDescription: String,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
+    val positionAdviceStatus: TaskStatus,
+    val positionAdviceError: String?,
+    val resumeFitStatus: TaskStatus,
+    val resumeFitError: String?,
 )
