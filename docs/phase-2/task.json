@@ -62,14 +62,14 @@
       "title": "Implement cover letter generation service",
       "description": "Generate and store cover letters per session, with regeneration support and version/history tracking.",
       "related": ["module.session.service", "common.ai", "module.resume.repo"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 9,
       "title": "Expose phase 2 APIs",
       "description": "Add controllers/endpoints for session create/detail, advice generation/read, resume-fit suggestions, and cover letter generation/read.",
       "related": ["module.session.api", "SecurityConfiguration", "ApiResponse"],
-      "status": "pending"
+      "status": "completed"
     },
     {
       "id": 10,
