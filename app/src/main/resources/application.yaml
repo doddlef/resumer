@@ -12,6 +12,11 @@ spring:
     password: ${POSTGRES_PASSWORD}
 
 resumer:
+  ai:
+    structured:
+      max-attempts: ${AI_STRUCTURED_MAX_ATTEMPTS:2}
+      include-last-error-in-retry-prompt: ${AI_STRUCTURED_INCLUDE_LAST_ERROR:true}
+      max-error-message-length: ${AI_STRUCTURED_MAX_ERROR_MESSAGE_LENGTH:200}
   auth:
     access:
       secret: ${AUTH_ACCESS_SECRET:local_dev_access_secret_change_me_1234567890}
