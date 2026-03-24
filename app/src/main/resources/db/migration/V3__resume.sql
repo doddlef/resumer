@@ -15,7 +15,6 @@ create table if not exists resumes (
     content text,
     file_hash text not null,
     size bigint not null,
-    storage_engine text not null,
     storage_key text not null,
     status resume_status not null default 'PENDING',
     error text,
@@ -24,7 +23,6 @@ create table if not exists resumes (
     constraint ck_resumes_filename_not_blank check (length(trim(filename)) > 0),
     constraint ck_resumes_file_hash_not_blank check (length(trim(file_hash)) > 0),
     constraint ck_resumes_size_non_negative check (size >= 0),
-    constraint ck_resumes_storage_engine_not_blank check (length(trim(storage_engine)) > 0),
     constraint ck_resumes_storage_key_not_blank check (length(trim(storage_key)) > 0),
     constraint ck_resumes_error_not_blank check (error is null or length(trim(error)) > 0)
 );

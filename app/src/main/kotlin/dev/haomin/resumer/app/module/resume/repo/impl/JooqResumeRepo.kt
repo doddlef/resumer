@@ -41,7 +41,6 @@ class JooqResumeRepo(
                 this.content = query.content
                 this.fileHash = query.fileHash
                 this.size = query.size
-                this.storageEngine = query.storageEngine
                 this.storageKey = query.storageKey
                 this.status = query.status.toJooq()
                 this.error = query.error
@@ -62,7 +61,6 @@ class JooqResumeRepo(
                 query.content?.let { set(RESUMES.content, it) }
                 query.fileHash?.let { set(RESUMES.fileHash, it) }
                 query.size?.let { set(RESUMES.size, it) }
-                query.storageEngine?.let { set(RESUMES.storageEngine, it) }
                 query.storageKey?.let { set(RESUMES.storageKey, it) }
                 query.status?.let { set(RESUMES.status, it.toJooq()) }
                 query.error?.let { set(RESUMES.error, it) }
@@ -98,7 +96,6 @@ internal fun P_Resumes.toDomain(): Resume =
         content = content,
         fileHash = requireNotNull(fileHash) { "Resume.fileHash is null" },
         size = requireNotNull(size) { "Resume.size is null" },
-        storageEngine = requireNotNull(storageEngine) { "Resume.storageEngine is null" },
         storageKey = requireNotNull(storageKey) { "Resume.storageKey is null" },
         status = requireNotNull(status) { "Resume.status is null" }.toDomain(),
         error = error,

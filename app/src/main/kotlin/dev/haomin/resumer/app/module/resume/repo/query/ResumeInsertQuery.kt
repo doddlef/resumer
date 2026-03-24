@@ -12,7 +12,6 @@ data class ResumeInsertQuery(
     val content: String? = null,
     val fileHash: String,
     val size: Long,
-    val storageEngine: String,
     val storageKey: String,
     val status: ResumeStatus = ResumeStatus.PENDING,
     val error: String? = null,

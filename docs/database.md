@@ -79,7 +79,6 @@ Table representing uploaded resumes and their analysis status:
 - `content`: text, extracted text content from the resume file for analysis
 - `file_hash`: text, hash of the resume file for deduplication, not null
 - `size`: bigint, size of the resume file in bytes, not null
-- `storage_engine`: text, identifier for where the resume file is stored (e.g. S3 or Local), not null
 - `storage_key`: text, key or path to access the stored resume file, not null
 - `status`: resume_status, not null, default `PENDING`
 - `error`: text, optional, error message if analysis failed

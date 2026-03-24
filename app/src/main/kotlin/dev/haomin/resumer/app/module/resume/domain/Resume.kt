@@ -37,7 +37,6 @@ enum class ResumeStatus {
  * @property content Extracted text content from the file; nullable when not yet parsed.
  * @property fileHash Hash of the original file content for deduplication/integrity checks.
  * @property size File size in bytes.
- * @property storageEngine Storage provider identifier (for example, local or s3).
  * @property storageKey Object key/path in the storage engine.
  * @property status Current resume processing status.
  * @property error Optional failure reason when processing fails.
@@ -51,7 +50,6 @@ data class Resume(
     val content: String?,
     val fileHash: String,
     val size: Long,
-    val storageEngine: String,
     val storageKey: String,
     val status: ResumeStatus,
     val error: String?,
