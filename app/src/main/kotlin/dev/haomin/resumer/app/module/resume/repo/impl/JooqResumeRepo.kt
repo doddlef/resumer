@@ -30,6 +30,16 @@ class JooqResumeRepo(
             ?.toDomain()
 
     /**
+     * Fetch all resumes by account id ordered by createdAt desc.
+     */
+    override fun selectByAccountId(accountId: UUID): List<Resume> =
+        dsl.selectFrom(RESUMES)
+            .where(RESUMES.accountId.eq(accountId))
+            .orderBy(RESUMES.createdAt.desc())
+            .fetchInto(P_Resumes::class.java)
+            .map { it.toDomain() }
+
+    /**
      * Fetch resume by account id and file hash.
      */
     override fun selectByAccountIdAndFileHash(accountId: UUID, fileHash: String): Resume? =

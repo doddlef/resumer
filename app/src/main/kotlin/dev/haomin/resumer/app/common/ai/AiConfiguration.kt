@@ -9,6 +9,5 @@ class AiConfiguration {
     @Bean
     fun llmClient(
         chatClientBuilder: ChatClient.Builder,
-        props: AiProperties,
-    ): LLMClient = SpringAiLLMClient(chatClientBuilder, props)
+    ): LLMClient = SpringAiLLMClient(chatClientBuilder)
 }

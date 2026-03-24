@@ -7,5 +7,7 @@ import java.util.UUID
 interface ResumeAnalysisRepo {
     fun selectLatestByResumeId(resumeId: UUID): ResumeAnalysis?
 
+    fun selectLatestByResumeIds(resumeIds: Collection<UUID>): Map<UUID, ResumeAnalysis>
+
     fun insertAndReturn(query: ResumeAnalysisInsertQuery): ResumeAnalysis
 }

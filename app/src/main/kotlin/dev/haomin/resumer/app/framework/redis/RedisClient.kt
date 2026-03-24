@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Component
 import tools.jackson.databind.ObjectMapper
 import java.time.Duration
+import io.lettuce.core.RedisBusyException
 
 @Component
 class RedisClient(
@@ -197,11 +198,26 @@ class RedisClient(
             template.opsForStream<String, String>()
                 .createGroup(streamKey, ReadOffset.latest(), groupName)
         }.onFailure { ex ->
-            // BUSY GROUP means a group already exists.
-            if (ex.message?.contains("BUSYGROUP") != true) {
+            // BUSYGROUP means a group already exists and is safe to ignore.
+            if (!isBusyGroupError(ex)) {
                 throw ex
             }
         }
+    }
+
+    private fun isBusyGroupError(error: Throwable): Boolean {
+        var current: Throwable? = error
+        while (current != null) {
+            if (current is RedisBusyException) {
+                return true
+            }
+            val msg = current.message.orEmpty()
+            if (msg.contains("BUSYGROUP", ignoreCase = true)) {
+                return true
+            }
+            current = current.cause
+        }
+        return false
     }
 
     /**

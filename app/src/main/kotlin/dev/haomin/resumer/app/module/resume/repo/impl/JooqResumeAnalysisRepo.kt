@@ -27,6 +27,19 @@ class JooqResumeAnalysisRepo(
             .fetchOneInto(P_ResumeAnalysis::class.java)
             ?.toDomain(objectMapper)
 
+    override fun selectLatestByResumeIds(resumeIds: Collection<UUID>): Map<UUID, ResumeAnalysis> {
+        if (resumeIds.isEmpty()) {
+            return emptyMap()
+        }
+        return dsl.selectFrom(RESUME_ANALYSIS)
+            .where(RESUME_ANALYSIS.resumeId.`in`(resumeIds))
+            .orderBy(RESUME_ANALYSIS.resumeId.asc(), RESUME_ANALYSIS.createdAt.desc())
+            .fetchInto(P_ResumeAnalysis::class.java)
+            .map { it.toDomain(objectMapper) }
+            .groupBy { it.resumeId }
+            .mapValues { (_, analyses) -> analyses.first() }
+    }
+
     override fun insertAndReturn(query: ResumeAnalysisInsertQuery): ResumeAnalysis =
         dsl.newRecord(RESUME_ANALYSIS)
             .apply {

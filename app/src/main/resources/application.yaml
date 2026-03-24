@@ -22,9 +22,6 @@ spring:
 
 resumer:
   ai:
-    provider: ${AI_PROVIDER:ollama}
-    model: ${AI_MODEL:qwen3:latest}
-    temperature: ${AI_TEMPERATURE:0.2}
     structured:
       max-attempts: ${AI_STRUCTURED_MAX_ATTEMPTS:2}
       include-last-error-in-retry-prompt: ${AI_STRUCTURED_INCLUDE_LAST_ERROR:true}

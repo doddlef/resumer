@@ -7,7 +7,6 @@ import org.springframework.ai.chat.client.ChatClient
 
 class SpringAiLLMClient(
     chatClientBuilder: ChatClient.Builder,
-    private val props: AiProperties,
 ) : LLMClient {
 
     private companion object {
@@ -30,9 +29,7 @@ class SpringAiLLMClient(
         }
 
         logger.debug(
-            "AI model response received: provider={}, model={}, chars={}",
-            props.provider,
-            props.model,
+            "AI model response received: chars={}",
             response.length,
         )
         return response

@@ -16,6 +16,11 @@ interface ResumeRepo {
     fun selectById(id: UUID): Resume?
 
     /**
+     * Reads all resumes for an account ordered by creation time descending.
+     */
+    fun selectByAccountId(accountId: UUID): List<Resume>
+
+    /**
      * Reads a resume by account id and file hash.
      */
     fun selectByAccountIdAndFileHash(accountId: UUID, fileHash: String): Resume?
